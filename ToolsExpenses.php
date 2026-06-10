@@ -2,11 +2,12 @@
 
 namespace Apps\Tms\Packages\Tools\Expenses;
 
+use Apps\Tms\Packages\Tools\Expenses\Model\AppsTmsToolsExpenses;
 use System\Base\BasePackage;
 
 class ToolsExpenses extends BasePackage
 {
-    //protected $modelToUse = ::class;
+    protected $modelToUse = AppsTmsToolsExpenses::class;
 
     protected $packageName = 'toolsexpenses';
 
@@ -14,58 +15,84 @@ class ToolsExpenses extends BasePackage
 
     public function init()
     {
-        //Note: If you want to use init function, you need to run parent::init as well.
-        //It is used by the use app database feature of the app.
-        //if you remove the init() function from this class, it is also fine.
         parent::init();
 
         return $this;
     }
 
-    public function getToolsExpensesById($id)
+    public function getExpenseByName($expenseName)
     {
-        $toolsexpenses = $this->getById($id);
-
-        if ($toolsexpenses) {
-            //
-            $this->addResponse('Success');
-
-            return;
+        if ($this->config->databasetype === 'db') {
+            $params =
+                [
+                    'conditions'    => 'name = :name:',
+                    'bind'          =>
+                        [
+                            'name'          => $expenseName,
+                        ]
+                ];
+        } else {
+            $params = ['conditions' => ['name', '=', $expenseName]];
         }
 
-        $this->addResponse('Error', 1);
-    }
+        $expenseArr = $this->getByParams($params);
 
-    public function addToolsExpenses($data)
-    {
-        //
-    }
-
-    public function updateToolsExpenses($data)
-    {
-        $toolsexpenses = $this->getById($id);
-
-        if ($toolsexpenses) {
-            //
-            $this->addResponse('Success');
-
-            return;
+        if ($expenseArr && count($expenseArr) > 0) {
+            return $expenseArr[0];
         }
 
-        $this->addResponse('Error', 1);
+        return false;
     }
 
-    public function removeToolsExpenses($data)
+    public function addExpense($data)
     {
-        $toolsexpenses = $this->getById($id);
+        if ($this->add($data)) {
+            $this->addResponse('Expense added');
 
-        if ($toolsexpenses) {
-            //
-            $this->addResponse('Success');
-
-            return;
+            return true;
         }
 
-        $this->addResponse('Error', 1);
+        $this->addResponse('Error Adding expense', 1);
+    }
+
+    public function updateExpense($data)
+    {
+        if ($this->update($data)) {
+            $this->addResponse('Expense updated');
+
+            return true;
+        }
+
+        $this->addResponse('Error Updating expense', 1);
+    }
+
+    public function removeExpense($data)
+    {
+        if ($this->remove($data['id'])) {
+            $this->addResponse('Expense removed');
+
+            return true;
+        }
+
+        $this->addResponse('Error removing expense', 1);
+
+        return false;
+    }
+
+    public function getExpenseTypes()
+    {
+        return
+            [
+                '0' =>
+                    [
+                        'id' => '0',
+                        'name'  => 'Advance'
+                    ],
+                '1' =>
+                    [
+                        'id' => '1',
+                        'name'  => 'Reimburse'
+                    ]
+            ];
     }
 }

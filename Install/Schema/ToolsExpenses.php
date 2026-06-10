@@ -22,27 +22,42 @@ class ToolsExpenses
                     ]
                 ),
                 new Column(
-                    'first_name',
+                    'name',
                     [
                         'type'          => Column::TYPE_VARCHAR,
                         'size'          => 50,
                         'notNull'       => true,
                     ]
                 ),
-                new Column(
-                    'last_name',
+                new Column(//1 - Advance, 2 - Reimburse, etc
+                    'type',
                     [
-                        'type'          => Column::TYPE_VARCHAR,
-                        'size'          => 50,
+                        'type'          => Column::TYPE_TINYINTEGER,
                         'notNull'       => true,
                     ]
-                )
+                ),
+                new Column(
+                    'description',
+                    [
+                        'type'          => Column::TYPE_VARCHAR,
+                        'size'          => 2048,
+                        'notNull'       => false,
+                    ]
+                ),
+                new Column(
+                    'archived',
+                    [
+                        'type'          => Column::TYPE_BOOLEAN,
+                        'notNull'       => true,
+                    ]
+                ),
             ],
             'indexes' => [
                 new Index(
                     'column_UNIQUE',
                     [
-                        'last_name'
+                        'name',
+                        'type'
                     ],
                     'UNIQUE'
                 )
@@ -50,20 +65,6 @@ class ToolsExpenses
             'options' => [
                 'TABLE_COLLATION' => 'utf8mb4_general_ci'
             ]
-        ];
-    }
-
-    public function indexes()
-    {
-        return
-        [
-            new Index(
-                'column_INDEX',
-                [
-                    'first_name'
-                ],
-                'INDEX'
-            )
         ];
     }
 }
